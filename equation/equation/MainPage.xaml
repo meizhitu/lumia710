@@ -1,0 +1,130 @@
+﻿<phone:PhoneApplicationPage 
+    x:Class="equation.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:controls="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="768" 
+    d:DataContext="{d:DesignData SampleData/MainViewModelSampleData.xaml}"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    SupportedOrientations="PortraitOrLandscape"  Orientation="Portrait"
+    shell:SystemTray.IsVisible="True" xmlns:my="clr-namespace:equation">
+
+    <!--LayoutRoot is the root grid where all page content is placed-->
+    <Grid x:Name="LayoutRoot" Background="Transparent">
+        <!--Pivot Control-->
+        <controls:Pivot Title="解方程">
+            <!--Pivot item one-->
+            <controls:PivotItem Header="三次">
+                <Grid x:Name="three" Background="Transparent">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="70"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+
+                    <!--ContentPanel - 在此处放置其他内容-->
+                    <Grid x:Name="three_content"  Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="1*" />
+                        </Grid.ColumnDefinitions>
+                        <my:NumberTextBox  Grid.Column="0" Grid.Row="0"  Text="" x:Name="textBox1">
+                        </my:NumberTextBox>
+                        <TextBlock Grid.Column="1" Grid.Row="0" Name="textBlock1" Text="x³ + " VerticalAlignment="Center" />
+                        <my:NumberTextBox  Grid.Column="2" Grid.Row="0"  Text="" x:Name="textBox2">
+
+                        </my:NumberTextBox>
+                        <TextBlock Grid.Column="3" Grid.Row="0" Name="textBlock2" Text="x² + " VerticalAlignment="Center" />
+                        <my:NumberTextBox  Grid.Column="4" Grid.Row="0"  Text="" x:Name="textBox3">
+
+                        </my:NumberTextBox>
+                        <TextBlock Grid.Column="5" Grid.Row="0" Name="textBlock3" Text="x + " VerticalAlignment="Center" />
+                        <my:NumberTextBox  Grid.Column="6" Grid.Row="0"   Text="" x:Name="textBox4">
+
+                        </my:NumberTextBox>
+                        <TextBlock Grid.Column="7" Grid.Row="0" Name="textBlock4" Text="= 0 " VerticalAlignment="Center" />
+                    </Grid>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Button Content="计算" Name="button1" Width="130" Height="80" VerticalAlignment="Center" Click="button1_Click" />
+                        <Button Content="清空" Grid.Column="1" Name="button2"  Width="130" Height="80" VerticalAlignment="Center" Click="button2_Click" />
+                    </Grid>
+                    <TextBlock Grid.Row="2" Name="textBlock5" Text="" />
+                </Grid>
+            </controls:PivotItem>
+ 
+            <!--Pivot item two-->
+            <controls:PivotItem Header="二次">
+                <Grid x:Name="two" Background="Transparent">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="70"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+
+                    <!--ContentPanel - 在此处放置其他内容-->
+                    <Grid x:Name="two_content"  Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="1*" />
+                        </Grid.ColumnDefinitions>
+
+                        <my:NumberTextBox  Grid.Column="0" Grid.Row="0"  Text="" x:Name="textBox2_2">
+
+                        </my:NumberTextBox>
+                        <TextBlock Grid.Column="1" Grid.Row="0"  Text="x² + " VerticalAlignment="Center" />
+                        <my:NumberTextBox  Grid.Column="2" Grid.Row="0"  Text="" x:Name="textBox3_2">
+
+                        </my:NumberTextBox>
+                        <TextBlock Grid.Column="3" Grid.Row="0"  Text="x + " VerticalAlignment="Center" />
+                        <my:NumberTextBox  Grid.Column="4" Grid.Row="0"   Text="" x:Name="textBox4_2">
+
+                        </my:NumberTextBox>
+                        <TextBlock Grid.Column="5" Grid.Row="0" Text="= 0 " VerticalAlignment="Center" />
+                    </Grid>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Button Content="计算" Name="button1_2" Width="130" Height="80" VerticalAlignment="Center" Click="button1_2_Click" />
+                        <Button Content="清空" Grid.Column="1" Name="button2_2"  Width="130" Height="80" VerticalAlignment="Center" Click="button2_2_Click" />
+                    </Grid>
+                    <TextBlock Grid.Row="2" Name="textBlock5_2" Text="" />
+                </Grid>
+            </controls:PivotItem>
+        </controls:Pivot>
+    </Grid>
+ 
+    <!--Sample code showing usage of ApplicationBar-->
+    <!--<phone:PhoneApplicationPage.ApplicationBar>
+        <shell:ApplicationBar IsVisible="True" IsMenuEnabled="True">
+            <shell:ApplicationBarIconButton IconUri="/Images/appbar_button1.png" Text="Button 1"/>
+            <shell:ApplicationBarIconButton IconUri="/Images/appbar_button2.png" Text="Button 2"/>
+            <shell:ApplicationBar.MenuItems>
+                <shell:ApplicationBarMenuItem Text="MenuItem 1"/>
+                <shell:ApplicationBarMenuItem Text="MenuItem 2"/>
+            </shell:ApplicationBar.MenuItems>
+        </shell:ApplicationBar>
+    </phone:PhoneApplicationPage.ApplicationBar>-->
+
+</phone:PhoneApplicationPage>
