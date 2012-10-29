@@ -21,8 +21,6 @@ namespace AirPm25
     public partial class MainPage : PhoneApplicationPage
     {
         private List<string> urlList = new List<string>();
-        private int curIndex = 0;
-        public PeriodicTask _tskPeriodic;
         private DispatcherTimer dt = new DispatcherTimer();
         // Constructor
         public MainPage()
@@ -43,7 +41,6 @@ namespace AirPm25
 
         void dt_Tick(object sender, EventArgs e)
         {
-            curIndex = 0;
             GetPm(urlList[0]);
         }
 
@@ -54,24 +51,7 @@ namespace AirPm25
             {
                 App.ViewModel.LoadData();
             }
-            curIndex = 0;
             GetPm(urlList[0]);
-
-            ScheduledAction tTask = ScheduledActionService.Find("pm25___");
-            if (tTask != null)
-            {
-                _tskPeriodic = tTask as PeriodicTask;
-            }
-            else
-            {
-                _tskPeriodic = new PeriodicTask("pm25___");
-                _tskPeriodic.Description = "后台更新PM2.5数据"; 
-            }
-            if (_tskPeriodic != null && !_tskPeriodic.IsScheduled)
-            {
-                ScheduledActionService.Add(_tskPeriodic);
-                ScheduledActionService.LaunchForTest("pm25___", TimeSpan.FromSeconds(10));
-            }
         }
 
         public void GetPm(string url)
@@ -89,97 +69,87 @@ namespace AirPm25
 
         private void HandleForecastResponse(IAsyncResult asyncResult)
         {
-            // get the state information
-            ForecastUpdateState forecastState = (ForecastUpdateState)asyncResult.AsyncState;
-            HttpWebRequest forecastRequest = (HttpWebRequest)forecastState.AsyncRequest;
-            // end the async request
-            forecastState.AsyncResponse = (HttpWebResponse)forecastRequest.EndGetResponse(asyncResult);
-            if (forecastState.AsyncResponse.StatusCode != HttpStatusCode.OK)
-            {
-                if (curIndex >= 2)
-                {
-                    curIndex = 0;
-                }
-                else
-                {
-                    //GetPm(urlList[++curIndex]);
-                }
-                return;
-            }
-            Stream streamResult;
             try
             {
+                // get the state information
+                ForecastUpdateState forecastState = (ForecastUpdateState)asyncResult.AsyncState;
+                HttpWebRequest forecastRequest = (HttpWebRequest)forecastState.AsyncRequest;
+                // end the async request
+                forecastState.AsyncResponse = (HttpWebResponse)forecastRequest.EndGetResponse(asyncResult);
+                if (forecastState.AsyncResponse.StatusCode != HttpStatusCode.OK)
+                {
+                    return;
+                }
+                Stream streamResult;
+
                 // get the stream containing the response from the async call
                 streamResult = forecastState.AsyncResponse.GetResponseStream();
                 StreamReader sr = new StreamReader(streamResult);
                 string all = sr.ReadToEnd();
-                if (curIndex == 0)
+                //{"location":"北京","date":"2012-05-09","time":"17:00:00","PM_low":"","PM_high":"172","rank":"轻度污染","Ozone":"0","resource":"美国大使馆"} 
+                string re = ".+\"PM_high\":\"(\\d+)\",\"rank\":\"([^\"]+)\"";
+                Regex regex = new Regex(re, RegexOptions.Compiled);
+                Match m = regex.Match(all);
+                if (m.Success)
                 {
-                    //{"location":"北京","date":"2012-05-09","time":"17:00:00","PM_low":"","PM_high":"172","rank":"轻度污染","Ozone":"0","resource":"美国大使馆"} 
-                    string re = ".+\"PM_high\":\"(\\d+)\",\"rank\":\"([^\"]+)\"";
-                    Regex regex = new Regex(re, RegexOptions.Compiled);
-                    Match m = regex.Match(all);
-                    if (m.Success)
-                    {
-                        Deployment.Current.Dispatcher.BeginInvoke(() =>
+                    Deployment.Current.Dispatcher.BeginInvoke(() =>
+               {
+                   //                   <tr><td  class="aqi_green" >Good </td><td class="keyrange">0-50</td></tr>
+                   //<tr><td  class="aqi_yellow" >Moderate	</td><td class="keyrange">51-100</td></tr>
+                   //<tr><td  class="aqi_orange" >Unhealthy for Sensitive Groups</td><td class="keyrange">101-150</td></tr>
+                   //<tr><td  class="aqi_red" >Unhealthy</td><td class="keyrange">151-200</td></tr>
+                   //<tr><td  class="aqi_purple" >Very Unhealthy</td><td class="keyrange">201-300</td></tr>
+                   //<tr><td  class="aqi_maroon" >Hazardous</td><td class="keyrange"> &gt;300</td></tr>
+                   this.highTb.Text = m.Result("$1");
+                   int high;
+                   Color color = Colors.White;
+                   if (int.TryParse(this.highTb.Text, out high))
                    {
-    //                   <tr><td  class="aqi_green" >Good </td><td class="keyrange">0-50</td></tr>
-    //<tr><td  class="aqi_yellow" >Moderate	</td><td class="keyrange">51-100</td></tr>
-    //<tr><td  class="aqi_orange" >Unhealthy for Sensitive Groups</td><td class="keyrange">101-150</td></tr>
-    //<tr><td  class="aqi_red" >Unhealthy</td><td class="keyrange">151-200</td></tr>
-    //<tr><td  class="aqi_purple" >Very Unhealthy</td><td class="keyrange">201-300</td></tr>
-    //<tr><td  class="aqi_maroon" >Hazardous</td><td class="keyrange"> &gt;300</td></tr>
-                       this.highTb.Text = m.Result("$1");
-                       int high;
-                       Color color = Colors.White;
-                       if (int.TryParse(this.highTb.Text, out high))
+                       if (high < 50)
+                           color = Colors.Green;
+                       else if (high < 100)
+                           color = Colors.Yellow;
+                       else if (high < 150)
+                           color = Colors.Orange;
+                       else if (high < 200)
+                           color = Colors.Red;
+                       else
+                           color = Colors.Purple;
+                   }
+                   this.rankTb.Text = m.Result("$2");
+                   this.dateTb.Text = "更新时间：" + DateTime.Now;
+                   if (color != Colors.White)
+                   {
+                       this.highTb.Foreground = new SolidColorBrush(color);
+                       this.rankTb.Foreground = new SolidColorBrush(color);
+                       ShellTile tile = ShellTile.ActiveTiles.First();
+                       if (tile != null)
                        {
-                           if (high < 50)
-                               color = Colors.Green;
-                           else if (high < 100)
-                               color = Colors.Yellow;
-                           else if (high < 150)
-                               color = Colors.Orange;
-                           else if (high < 200)
-                               color = Colors.Red;
-                           else
-                               color = Colors.Purple;
-                       }
-                       this.rankTb.Text = m.Result("$2");
-                       this.dateTb.Text = "更新时间：" + DateTime.Now;
-                       if (color != Colors.White)
-                       {
-                           this.highTb.Foreground = new SolidColorBrush(color);
-                           this.rankTb.Foreground = new SolidColorBrush(color);
-                           ShellTile tile = ShellTile.ActiveTiles.First();
-                           if (tile != null)
+                           // 设置要更新的一些属性
+                           StandardTileData tileData = new StandardTileData
                            {
-                               // 设置要更新的一些属性
-                               StandardTileData tileData = new StandardTileData
-                               {
-                                   Title = high + "",
-                                   BackgroundImage = new Uri("SplashScreenImage.jpg", UriKind.Relative),
-                                   Count = 0,
-                                   BackTitle = "北京",
-                                   BackBackgroundImage = new Uri("ApplicationIcon.png", UriKind.Relative),
-                                   BackContent = high + ""
-                               };
-                               // 更新
-                               tile.Update(tileData);
-                           }
+                               Title = high + "",
+                               BackgroundImage = new Uri("SplashScreenImage.jpg", UriKind.Relative),
+                               Count = 0,
+                               BackTitle = "北京",
+                               BackBackgroundImage = new Uri("ApplicationIcon.png", UriKind.Relative),
+                               BackContent = high + ""
+                           };
+                           // 更新
+                           tile.Update(tileData);
                        }
-                   });
-                    }
-
+                   }
+               });
                 }
+
             }
-            catch (FormatException)
+
+            catch
             {
                 // there was some kind of error processing the response from the web
                 // additional error handling would normally be added here
                 return;
             }
-            curIndex = 0;
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Deployment xmlns="http://schemas.microsoft.com/windowsphone/2009/deployment" AppPlatformVersion="7.1">
-  <App xmlns="" ProductID="{12894f7b-c607-4adb-b6d9-cc4ec4b58058}" Title="北京PM2.5" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="AirPm25 author" Description="Sample description" Publisher="AirPm25">
+  <App xmlns="" ProductID="{5642e52c-b1cb-403a-ac0e-3afe58610dcf}" Title="RP计算器" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="RpCalc author" Description="Sample description" Publisher="RpCalc">
     <IconPath IsRelative="true" IsResource="false">ApplicationIcon.png</IconPath>
     <Capabilities>
       <Capability Name="ID_CAP_GAMERSERVICES" />
@@ -22,11 +22,11 @@
       <DefaultTask Name="_default" NavigationPage="MainPage.xaml" />
     </Tasks>
     <Tokens>
-      <PrimaryToken TokenID="AirPm25Token" TaskName="_default">
+      <PrimaryToken TokenID="RpCalcToken" TaskName="_default">
         <TemplateType5>
           <BackgroundImageURI IsRelative="true" IsResource="false">Background.png</BackgroundImageURI>
           <Count>0</Count>
-          <Title>北京PM2.5</Title>
+          <Title>RP计算器</Title>
         </TemplateType5>
       </PrimaryToken>
     </Tokens>
